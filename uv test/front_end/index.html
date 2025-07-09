@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ShellMovie</title>
+  <link rel="stylesheet" type="text/css" href="css/movie.css" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script>
+    $(function(){
+      $("form").on("submit", function(e) {
+        e.preventDefault()
+        console.log("호출 진행", $("#q").val())
+
+        movie = $("#q").val()
+        $.get("http://localhost:8000/movie?q=" + movie)
+        .done(function(d) {
+          $(".movies-list").empty()
+          if(d.Response == "True"){
+            for(var i = 0; i < d.Search.length; i++) {
+              data = d.Search[i]
+              html = `<div class="movie">
+                    <a href="movie.html?imdbID=${data.imdbID}" class="movie-link">
+                      <div class="product-image">
+                        <img src="${data.Poster}" alt="Movie Poster"/>
+                        <div class="type">${data.Type}</div>
+                      </div>
+                      <div class="detail">
+                        <p class="year">${data.Year}</p>
+                        <h3>${data.Title}</h3>
+                      </div>
+                    </a>
+                  </div>`
+              $(".movies-list").append(html)
+
+            }
+          }
+        })
+        .fail(function(e) {
+          console.error(e)
+        })
+
+      })
+
+    })
+  </script>
+</head>
+<body>
+  <header>
+    <a href="index.html">
+      <h1><span>Shell</span>Movies</h1>
+    </a>
+  </header>
+  <main class="home">
+    <form class="search-box">
+      <input type="text" placeholder="영화 제목을 입력하세요." id="q" />
+      <input type="submit" value="검색" />
+    </form>
+
+    <div class="movies-list"></div>
+  </main>
+</body>
+</html>
